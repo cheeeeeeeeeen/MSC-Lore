@@ -1,0 +1,28 @@
+name: headroom
+
+services:
+  headroom-proxy:
+    build:
+      context: "https://github.com/chopratejas/headroom.git#34dafe69d907c9a2971abc0d801ff9bfa498b3a8"
+      args:
+        HEADROOM_EXTRAS: proxy,code,memory,ml
+    command: [
+      "--host", "0.0.0.0",
+      "--memory",
+      "--code-graph"
+    ]
+    working_dir: /workspace
+    environment:
+      - HEADROOM_HOST=0.0.0.0
+      - HEADROOM_TELEMETRY=off
+    ports:
+      - "8787:8787"
+    volumes:
+      - ".:/workspace"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8787/readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
